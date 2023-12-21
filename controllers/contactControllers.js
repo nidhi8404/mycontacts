@@ -31,12 +31,29 @@ const getContact = asyncHandler(async (req, res) => {
 });
 
 const updateContact = asyncHandler(async (req, res) => {
-  const contact = await Contact.findById;
-  res.status(200).json({ message: `Update Contact for ${req.params.id}` });
+  const contact = await Contact.findById(req.params.id);
+  if (!contact) {
+    res.status(404);
+    throw new Error("Contact Not Found");
+  }
+  const updatedContact = await Contact.findByIdAndUpdate(
+    req.params.id,
+    req.body,
+    {
+      new: true,
+    }
+  );
+  res.status(200).json(updatedContact);
 });
 
 const deleteContact = asyncHandler(async (req, res) => {
-  res.status(200).json({ message: `Delete Contact for ${req.params.id}` });
+  const contact = await Contact.findById(req.params.id);
+  if (!contact) {
+    res.status(404);
+    throw new Error("Contact Not Found");
+  }
+  await Contact.remove();
+  res.status(200).json(contact);
 });
 
 module.exports = {
